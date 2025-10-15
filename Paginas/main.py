@@ -1,9 +1,6 @@
 
 import pygame
 import sys
-# from Paginas.main_simulation import run_simulation
-# from Paginas.agentesP import show_agents_carousel
-# from Paginas.SelectionP import show_selection_carousel
 
 pygame.init()
 
@@ -23,29 +20,40 @@ def main():
 	running = True
 	while running:
 		screen.fill((30,30,30))
+		# Título
+		titulo = font.render('Arena Effect Simulator', True, (255,255,255))
+		screen.blit(titulo, (WIDTH//2 - 150, 30))
+		
 		# Botões principais
-		btn_social = pygame.Rect(100, 100, 200, 50)
-		btn_agents = pygame.Rect(100, 200, 200, 50)
-		btn_simulation = pygame.Rect(100, 300, 200, 50)
-		draw_button('Redes Sociais', btn_social)
-		draw_button('Agentes', btn_agents)
-		draw_button('Simulação', btn_simulation)
+		btn_personagens = pygame.Rect(100, 120, 250, 50)
+		btn_armas = pygame.Rect(100, 190, 250, 50)
+		btn_mapas = pygame.Rect(100, 260, 250, 50)
+		btn_simulation = pygame.Rect(100, 330, 250, 50)
+		
+		draw_button('Personagens', btn_personagens)
+		draw_button('Armas', btn_armas)
+		draw_button('Mapas', btn_mapas)
+		draw_button('Iniciar Simulação', btn_simulation, color=(0,150,0))
+		
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
 				running = False
 			elif event.type == pygame.MOUSEBUTTONDOWN:
-				if btn_social.collidepoint(event.pos):
-					# Abrir redes sociais (placeholder)
-					pass
-				elif btn_agents.collidepoint(event.pos):
-					import agentesP
-					agentesP.show_agents_carousel(screen)
+				if btn_personagens.collidepoint(event.pos):
+					import personagensP
+					personagensP.show_personagens_carousel(screen)
 					pygame.event.clear()
 					screen.fill((30,30,30))
-					draw_button('Redes Sociais', btn_social)
-					draw_button('Agentes', btn_agents)
-					draw_button('Simulação', btn_simulation)
-					pygame.display.flip()
+				elif btn_armas.collidepoint(event.pos):
+					import armasP
+					armasP.show_armas_carousel(screen)
+					pygame.event.clear()
+					screen.fill((30,30,30))
+				elif btn_mapas.collidepoint(event.pos):
+					import mapasP
+					mapasP.show_mapas_carousel(screen)
+					pygame.event.clear()
+					screen.fill((30,30,30))
 				elif btn_simulation.collidepoint(event.pos):
 					import SelectionP
 					SelectionP.show_selection_carousel(screen)

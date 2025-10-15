@@ -25,7 +25,19 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from mapas.mapa0 import desenhar_mapa # Supondo função para desenhar paredes
 
-from agentes.agente0 import criar_agente # Supondo função para criar agente
+
+def load_personagem_params(personagem_id):
+	import importlib.util, os
+	personagens_dir = os.path.join(os.path.dirname(__file__), '..', 'personagens')
+	fname = f'personagem{personagem_id}.py'
+	fpath = os.path.join(personagens_dir, fname)
+	if not os.path.exists(fpath):
+		raise FileNotFoundError(f'Arquivo do personagem não encontrado: {fpath}')
+	spec = importlib.util.spec_from_file_location(f'personagem{personagem_id}', fpath)
+	mod = importlib.util.module_from_spec(spec)
+	spec.loader.exec_module(mod)
+	# Espera que o arquivo tenha a classe Personagem e a função criar_personagem
+	return mod.criar_personagem
 
 # Funções globais de colisão e resposta
 def check_collision(a1, a2):
@@ -64,7 +76,7 @@ def handle_collision(a1, a2):
 			a2.x -= move_x * extra
 			a2.y -= move_y * extra
 
-def run_simulation(selected_map_id, selected_agent_ids):
+def run_simulation(selected_map_id, selected_personagem_ids, selected_arma_ids=[]):
 	pygame.init()
 	WIDTH, HEIGHT = 800, 600
 	screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -72,35 +84,36 @@ def run_simulation(selected_map_id, selected_agent_ids):
 	clock = pygame.time.Clock()
 	# Inicializa mapa
 	desenhar_mapa(screen)
-	# Inicializa agentes
-	agentes = []
-	for agent_id in selected_agent_ids:
+	# Inicializa personagens
+	personagens = []
+	for personagem_id in selected_personagem_ids:
 		x = random.randint(50, WIDTH-50)
 		y = random.randint(50, HEIGHT-50)
-		agente = criar_agente(agent_id, x, y)
-		agentes.append(agente)
+		criar_personagem = load_personagem_params(personagem_id)
+		personagem = criar_personagem(personagem_id, x, y)
+		personagens.append(personagem)
 	running = True
 	while running:
 		delta_time = clock.tick(120) / 16.67  # Normaliza para 60 FPS base
 		screen.fill((20,20,20))
 		desenhar_mapa(screen)
-		# Atualiza e desenha agentes
-		for agente in agentes:
-			update_agent(agente, delta_time, WIDTH, HEIGHT)
-			draw_agent(agente, screen)
-		# Interações agente-agente
+		# Atualiza e desenha personagens
+		for personagem in personagens:
+			update_agent(personagem, delta_time, WIDTH, HEIGHT)
+			draw_agent(personagem, screen)
+		# Interações personagem-personagem
 		pares_processados = set()
-		for i, a1 in enumerate(agentes):
-			for j, a2 in enumerate(agentes[i+1:], start=i+1):
-				par = tuple(sorted([id(a1), id(a2)]))
+		for i, p1 in enumerate(personagens):
+			for j, p2 in enumerate(personagens[i+1:], start=i+1):
+				par = tuple(sorted([id(p1), id(p2)]))
 				if par in pares_processados:
 					continue
-				if check_collision(a1, a2):
-					handle_collision(a1, a2)
+				if check_collision(p1, p2):
+					handle_collision(p1, p2)
 					pares_processados.add(par)
-		# Interações agente-ambiente (exemplo: colisão com parede)
-		for agente in agentes:
-			check_wall_collision(agente, WIDTH, HEIGHT)
+		# Interações personagem-ambiente (exemplo: colisão com parede)
+		for personagem in personagens:
+			check_wall_collision(personagem, WIDTH, HEIGHT)
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
 				running = False

@@ -1,12 +1,12 @@
 import pygame
-class Agente:
+class Personagem:
     def __init__(self, nome, id, tamanho, velocidade, massa, cor, comportamentos, x, y):
-        self.nome = 'adsdada'
+        self.nome = 'kytgiktikt'
         self.id = id
-        self.tamanho = tamanho
-        self.velocidade = velocidade
-        self.massa = massa
-        self.cor = cor
+        self.tamanho = 20
+        self.velocidade = 3
+        self.massa = 5
+        self.cor = (0, 255, 0)
         self.forca = velocidade * massa
         self.comportamentos = comportamentos
         self.x = x
@@ -36,10 +36,10 @@ class Agente:
         if self.y - self.tamanho < 0 or self.y + self.tamanho > 600:
             self.vy *= -1
 
-def criar_agente(agent_id, x, y):
-    return Agente(
+def criar_personagem(personagem_id, x, y):
+    return Personagem(
         nome='',
-        id=2,
+        id=3,
         tamanho=20,
         velocidade=3,
         massa=5,
