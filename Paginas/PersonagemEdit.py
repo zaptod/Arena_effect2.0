@@ -3,10 +3,16 @@ import pygame
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from bases_de_dados.Banco_de_dados_comportamentais import comportamentos_db # Supondo lista de dicts
+from bases_de_dados.Banco_de_dados_comportamentais import comportamentos_db
 
-def edit_personagem(personagem, screen):
-	font = pygame.font.SysFont(None, 28)
+def edit_personagem(personagem, screen, fonts=None):
+	"""Edita um personagem existente"""
+	# Se fonts não foi passado, cria fonts padrão
+	if fonts is None:
+		font = pygame.font.SysFont(None, 28)
+	else:
+		font = fonts.get('medium', pygame.font.SysFont(None, 28))
+	
 	clock = pygame.time.Clock()
 	editing = True
 	attr_names = ['nome', 'tamanho', 'velocidade', 'massa', 'cor']  # id não editável
